@@ -1,6 +1,6 @@
 /** Shared Florida warehouse — each customer gets a unique suite code on their label line. */
 export const WAREHOUSE = {
-  attentionLine: 'Jasmine Global Warehouse',
+  attentionLine: 'Jasmine Shipping Warehouse',
   line1: '1840 NW 79th Ave',
   city: 'Miami',
   state: 'FL',

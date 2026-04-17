@@ -378,7 +378,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         userId: user.id,
         type: 'system',
         title: 'You are approved',
-        body: 'Welcome to Jasmine Global — your account is active.',
+        body: 'Welcome to Jasmine Shipping — your account is active.',
         read: false,
         createdAt: new Date().toISOString(),
       })

@@ -1,20 +1,53 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-surface: #faf8fc;
+  --color-ink: #131022;
 }
 
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 
 #root {
   min-height: 100dvh;
+}
+
+::selection {
+  background-color: rgba(244, 114, 182, 0.25);
+  color: inherit;
+}
+
+/* Horizontal scroll for nav chips on small screens — no ugly scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+  .safe-px {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .safe-pb {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
 }
 
 @media print {

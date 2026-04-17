@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom'
+import { JasmineLogo } from '../components/JasmineLogo'
 import { useAppState } from '../contexts/AppStateContext'
 import { WarehouseAddressCard } from '../components/WarehouseAddressCard'
 
@@ -30,12 +31,15 @@ export function Tutorial() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">How Jasmine works</h1>
-        <p className="mt-1 text-slate-600">
+        <div className="flex flex-wrap items-center gap-4">
+          <JasmineLogo variant="full" theme="dark" className="h-10 w-auto" />
+          <h1 className="text-2xl font-semibold text-slate-900">How it works</h1>
+        </div>
+        <p className="mt-3 text-slate-600">
           Quick walkthrough — come back here anytime from the menu.
         </p>
         {welcome ? (
-          <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-950">
+          <p className="mt-3 rounded-2xl border border-rose-100/80 bg-gradient-to-r from-rose-50 to-teal-50 px-4 py-2.5 text-sm text-slate-800">
             You’re in — here’s the short version.
           </p>
         ) : null}
@@ -47,7 +51,7 @@ export function Tutorial() {
         {STEPS.map((step) => (
           <li
             key={step.title}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-2xl border border-violet-100/80 bg-white/90 p-5 shadow-md shadow-violet-100/40"
           >
             <h2 className="font-semibold text-slate-900">{step.title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.body}</p>
@@ -58,20 +62,20 @@ export function Tutorial() {
       <div className="flex flex-wrap items-center gap-4">
         <Link
           to="/incoming"
-          className="rounded-lg bg-[#0c1222] px-4 py-2 text-sm font-semibold text-white hover:bg-[#161f36]"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-gradient-to-r from-rose-500 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-rose-500/25 transition hover:brightness-105 active:scale-[0.99]"
         >
           Log an incoming package
         </Link>
         <Link
           to="/dashboard"
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-2xl border border-violet-200 bg-white/80 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-rose-200 hover:bg-rose-50/50"
         >
           Go to dashboard
         </Link>
         <button
           type="button"
           onClick={() => markTutorialComplete()}
-          className="text-sm font-medium text-amber-800 hover:underline"
+          className="text-sm font-semibold text-rose-600 hover:text-rose-700 hover:underline"
         >
           Mark walkthrough complete
         </button>

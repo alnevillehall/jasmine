@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { JasmineLogo } from './JasmineLogo'
 import { useAppState } from '../contexts/AppStateContext'
 
 const nav = [
@@ -15,10 +16,10 @@ const nav = [
 
 function linkClass({ isActive }: { isActive: boolean }) {
   return [
-    'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+    'shrink-0 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200',
     isActive
-      ? 'bg-white/15 text-white'
-      : 'text-slate-300 hover:bg-white/10 hover:text-white',
+      ? 'bg-white/20 text-white shadow-inner ring-1 ring-white/20'
+      : 'text-violet-100/90 hover:bg-white/10 hover:text-white active:scale-[0.98]',
   ].join(' ')
 }
 
@@ -30,26 +31,19 @@ export function Layout() {
     : 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-40 border-b border-slate-800 bg-[#0c1222] text-white shadow-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+    <div className="flex min-h-screen min-h-[100dvh] flex-col bg-[#faf8fc] text-slate-900">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-gradient-to-br from-[#141028] via-[#1c1538] to-[#12102a] text-white shadow-lg shadow-violet-950/30 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8 safe-px">
           <button
             type="button"
             onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 text-left"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-start sm:min-w-0"
+            aria-label="Home"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 text-lg font-bold text-slate-900 shadow">
-              J
-            </span>
-            <span className="leading-tight">
-              <span className="block text-sm font-semibold tracking-tight">
-                Jasmine Global
-              </span>
-              <span className="text-xs text-slate-400">US → Jamaica · Simple &amp; fair</span>
-            </span>
+            <JasmineLogo variant="compact" theme="light" className="h-9 w-auto sm:h-10" />
           </button>
 
-          <nav className="hidden flex-wrap items-center gap-1 md:flex">
+          <nav className="scrollbar-hide hidden max-w-[min(100vw-12rem,52rem)] items-center gap-1 overflow-x-auto md:flex">
             {nav.map((item) => (
               <NavLink
                 key={item.to}
@@ -57,10 +51,10 @@ export function Layout() {
                 className={linkClass}
                 end={item.to === '/dashboard' || item.to === '/tutorial'}
               >
-                <span className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   {item.label}
                   {item.to === '/alerts' && unread > 0 ? (
-                    <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-slate-900">
+                    <span className="rounded-full bg-gradient-to-r from-amber-400 to-rose-400 px-1.5 py-0.5 text-[10px] font-bold text-slate-900 shadow-sm">
                       {unread}
                     </span>
                   ) : null}
@@ -69,17 +63,17 @@ export function Layout() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => navigate('/track')}
-              className="hidden rounded-lg border border-white/20 px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10 sm:inline"
+              className="hidden min-h-[40px] rounded-2xl border border-white/20 px-3 py-2 text-sm text-violet-100 transition hover:bg-white/10 sm:inline-flex sm:items-center"
             >
-              Track shipment
+              Track
             </button>
-            <div className="hidden text-right text-xs sm:block">
-              <div className="font-medium text-white">{user?.fullName}</div>
-              <div className="text-slate-400">{user?.company ?? user?.email}</div>
+            <div className="hidden max-w-[140px] text-right text-xs leading-tight sm:block sm:max-w-[200px]">
+              <div className="truncate font-medium text-white">{user?.fullName}</div>
+              <div className="truncate text-violet-200/70">{user?.company ?? user?.email}</div>
             </div>
             <button
               type="button"
@@ -87,35 +81,39 @@ export function Layout() {
                 logout()
                 navigate('/')
               }}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-sm hover:bg-white/20"
+              className="min-h-[40px] rounded-2xl bg-white/10 px-3 py-2 text-sm font-medium transition hover:bg-white/20 active:scale-[0.98]"
             >
               Sign out
             </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1 border-t border-white/10 px-4 py-2 md:hidden">
+        <div className="scrollbar-hide flex gap-1 overflow-x-auto border-t border-white/10 px-3 py-2.5 md:hidden safe-px safe-pb">
           {nav.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClass}>
-              {item.label}
-              {item.to === '/alerts' && unread > 0 ? ` (${unread})` : ''}
+              <span className="whitespace-nowrap">
+                {item.label}
+                {item.to === '/alerts' && unread > 0 ? ` (${unread})` : ''}
+              </span>
             </NavLink>
           ))}
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 sm:py-10 lg:px-8 safe-px">
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
-        <p className="font-medium text-slate-700">Jasmine Global Logistics</p>
-        <p className="mt-1 max-w-md mx-auto text-slate-600">
-          We help you ship from the US to Jamaica — clearly, kindly, and without the fuss.
+      <footer className="border-t border-violet-100 bg-gradient-to-b from-white to-violet-50/50 py-10 text-center text-sm text-slate-600">
+        <div className="flex justify-center px-4">
+          <JasmineLogo variant="full" theme="dark" className="h-10 w-auto sm:h-11" />
+        </div>
+        <p className="mx-auto mt-4 max-w-md px-4 text-slate-600">
+          US → Jamaica — clear, simple, and without the fuss.
         </p>
-        <p className="mt-3 text-xs text-slate-400">Preview: your data stays in this browser for now.</p>
-        <p className="mt-2 text-xs">
-          © {new Date().getFullYear()} Jasmine Global Logistics. All rights reserved.
+        <p className="mt-4 text-xs text-slate-400">Preview: your data stays in this browser for now.</p>
+        <p className="mt-2 text-xs text-slate-400">
+          © {new Date().getFullYear()} Jasmine Shipping. All rights reserved.
         </p>
       </footer>
     </div>
