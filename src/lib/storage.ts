@@ -8,9 +8,15 @@ import type {
   Shipment,
   UserProfile,
 } from './types'
-import { migrateUser } from './migrate'
+import { migrateShipment, migrateUser } from './migrate'
 
 const KEYS = {
+  state: 'bloom-shipping-app-state',
+  session: 'bloom-shipping-app-session',
+} as const
+
+/** Reads legacy localStorage from the previous app id so upgrades don’t lose data. */
+const LEGACY_KEYS = {
   state: 'jasmine-global-logistics-state',
   session: 'jasmine-global-logistics-session',
 } as const
@@ -29,21 +35,34 @@ function defaultState(): AppState {
 
 export function loadState(): AppState {
   try {
-    const raw = localStorage.getItem(KEYS.state)
+    const fromNew = localStorage.getItem(KEYS.state)
+    const fromLegacy = localStorage.getItem(LEGACY_KEYS.state)
+    const raw = fromNew ?? fromLegacy
     if (!raw) return defaultState()
     const parsed = JSON.parse(raw) as AppState
     const users = (parsed.users ?? []).map((u) => migrateUser(u as UserProfile))
-    return {
+    const shipments = (parsed.shipments ?? []).map((s) => migrateShipment(s as Shipment))
+    const next: AppState = {
       ...defaultState(),
       ...parsed,
       users,
-      shipments: parsed.shipments ?? [],
+      shipments,
       invoices: parsed.invoices ?? [],
       payments: parsed.payments ?? [],
       paymentMethods: parsed.paymentMethods ?? [],
       alerts: parsed.alerts ?? [],
       incomingPackages: parsed.incomingPackages ?? [],
     }
+    /** One-time upgrade: persist under new key and drop legacy blob. */
+    if (!fromNew && fromLegacy) {
+      try {
+        localStorage.setItem(KEYS.state, JSON.stringify(next))
+        localStorage.removeItem(LEGACY_KEYS.state)
+      } catch {
+        /* ignore */
+      }
+    }
+    return next
   } catch {
     return defaultState()
   }
@@ -54,12 +73,37 @@ export function saveState(state: AppState): void {
 }
 
 export function getSessionUserId(): string | null {
-  return localStorage.getItem(KEYS.session)
+  const next = localStorage.getItem(KEYS.session)
+  if (next) return next
+  const legacy = localStorage.getItem(LEGACY_KEYS.session)
+  if (legacy) {
+    try {
+      localStorage.setItem(KEYS.session, legacy)
+      localStorage.removeItem(LEGACY_KEYS.session)
+    } catch {
+      /* ignore */
+    }
+    return legacy
+  }
+  return null
 }
 
 export function setSessionUserId(userId: string | null): void {
-  if (userId) localStorage.setItem(KEYS.session, userId)
-  else localStorage.removeItem(KEYS.session)
+  if (userId) {
+    localStorage.setItem(KEYS.session, userId)
+    try {
+      localStorage.removeItem(LEGACY_KEYS.session)
+    } catch {
+      /* ignore */
+    }
+  } else {
+    localStorage.removeItem(KEYS.session)
+    try {
+      localStorage.removeItem(LEGACY_KEYS.session)
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 export function upsertUser(

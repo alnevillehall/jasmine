@@ -33,13 +33,14 @@ export function Shipments() {
               <th className="px-4 py-3 font-medium">Route</th>
               <th className="px-4 py-3 font-medium">Service</th>
               <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium hidden sm:table-cell">Load</th>
               <th className="px-4 py-3 font-medium">Est. delivery</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {list.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-slate-500">
+                <td colSpan={6} className="px-4 py-12 text-center text-slate-500">
                   No shipments yet.{' '}
                   <Link to="/shipments/new" className="font-medium text-amber-700">
                     Create your first
@@ -61,6 +62,28 @@ export function Shipments() {
                     {s.origin.city} → {s.destination.city}
                   </td>
                   <td className="px-4 py-3 capitalize text-slate-600">{s.service}</td>
+                  <td className="hidden px-4 py-3 sm:table-cell">
+                    <div className="flex flex-wrap gap-1">
+                      {s.carePackage ? (
+                        <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] font-semibold text-rose-800">
+                          Care
+                        </span>
+                      ) : null}
+                      {s.overseasPackaging === 'box' ? (
+                        <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900">
+                          Box
+                        </span>
+                      ) : null}
+                      {s.overseasPackaging === 'barrel' ? (
+                        <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900">
+                          Barrel
+                        </span>
+                      ) : null}
+                      {!s.carePackage && !s.overseasPackaging ? (
+                        <span className="text-slate-400">—</span>
+                      ) : null}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-800">
                       {shipmentStatusLabel(s.status)}

@@ -1,6 +1,6 @@
 /** Shared Florida warehouse — each customer gets a unique suite code on their label line. */
 export const WAREHOUSE = {
-  attentionLine: 'Jasmine Shipping Warehouse',
+  attentionLine: 'Bloom Shipping Warehouse',
   line1: '1840 NW 79th Ave',
   city: 'Miami',
   state: 'FL',
@@ -10,7 +10,7 @@ export const WAREHOUSE = {
 
 export function generateSuiteCode(): string {
   const part = crypto.randomUUID().replace(/-/g, '').slice(0, 6).toUpperCase()
-  return `JGL-${part}`
+  return `BLM-${part}`
 }
 
 export function formatWarehouseLines(fullName: string, suiteCode: string): string[] {

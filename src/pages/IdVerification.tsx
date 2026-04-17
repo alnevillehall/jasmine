@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { JasmineLogo } from '../components/JasmineLogo'
+import { BloomLogo } from '../components/BloomLogo'
 import { useAppState } from '../contexts/AppStateContext'
 import type { IdDocumentType } from '../lib/types'
 
@@ -49,7 +49,7 @@ export function IdVerification() {
     <div className="min-h-screen min-h-[100dvh] bg-gradient-to-br from-violet-100/80 via-rose-50 to-teal-50 px-4 py-10">
       <div className="mx-auto max-w-lg">
         <div className="mb-6 flex items-center justify-between">
-          <JasmineLogo variant="mark" theme="dark" className="h-10 w-10" />
+          <BloomLogo variant="mark" theme="dark" className="h-10 w-10" />
           <button
             type="button"
             onClick={() => {

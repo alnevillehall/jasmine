@@ -1,5 +1,5 @@
 import { Link, Navigate } from 'react-router-dom'
-import { JasmineLogo } from '../components/JasmineLogo'
+import { BloomLogo } from '../components/BloomLogo'
 import { useAppState } from '../contexts/AppStateContext'
 
 const WHY = [
@@ -12,6 +12,7 @@ const EXTRAS = [
   'See every step from pickup to your door',
   'Heads-up alerts so you’re never left guessing',
   'Invoices & payments without the headache',
+  'Box & barrel lists plus care packages for overseas family',
 ] as const
 
 export function Landing() {
@@ -40,9 +41,9 @@ export function Landing() {
           <Link
             to="/"
             className="inline-flex max-w-[min(100%,280px)] shrink-0"
-            aria-label="Jasmine Shipping home"
+            aria-label="Bloom Shipping home"
           >
-            <JasmineLogo variant="full" theme="light" className="h-[52px] w-auto sm:h-[60px]" />
+            <BloomLogo variant="full" theme="light" className="h-[52px] w-auto sm:h-[60px]" />
           </Link>
           <div className="flex flex-wrap items-center gap-3 sm:justify-end">
             <Link
@@ -101,7 +102,7 @@ export function Landing() {
             <p className="mt-6 rounded-2xl bg-white/10 p-4 text-xs leading-relaxed text-rose-100/90">
               Try the demo:{' '}
               <code className="rounded bg-black/20 px-1.5 py-0.5 font-mono text-amber-200">
-                demo@jasmine.global
+                demo@bloomshipping.demo
               </code>{' '}
               ·{' '}
               <code className="rounded bg-black/20 px-1.5 py-0.5 font-mono text-amber-200">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SUPPORT_EMAIL } from '../lib/brand'
 import { useAppState } from '../contexts/AppStateContext'
 
 export function Support() {
@@ -29,7 +30,10 @@ export function Support() {
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">Need help?</h1>
         <p className="mt-1 text-slate-600">
-          Ask us anything — shipping, customs, or billing. In this preview, replies land in your alerts.
+          Ask us anything — shipping, customs, or billing.
+          {!import.meta.env.PROD
+            ? ' In local preview, replies land in your alerts.'
+            : ' We’ll follow up by email.'}
         </p>
       </div>
 
@@ -80,8 +84,15 @@ export function Support() {
           US <strong className="text-slate-800">+1 (800) 555-0199</strong> · JM{' '}
           <strong className="text-slate-800">+1 (876) 555-0142</strong>
         </p>
-        <p className="mt-2">care@jasmine.global · Mon–Sat, 8am–8pm ET</p>
-        <p className="mt-2 text-xs text-slate-500">Sample numbers for this demo.</p>
+        <p className="mt-2">
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-amber-800 hover:underline">
+            {SUPPORT_EMAIL}
+          </a>{' '}
+          · Mon–Sat, 8am–8pm ET
+        </p>
+        {!import.meta.env.PROD ? (
+          <p className="mt-2 text-xs text-slate-500">Sample numbers for local preview.</p>
+        ) : null}
       </div>
     </div>
   )

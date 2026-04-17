@@ -30,6 +30,7 @@ import {
   upsertUser,
 } from '../lib/storage'
 import { ensureSeed } from '../lib/seed'
+import { TRACKING_PREFIX } from '../lib/brand'
 import { generateSuiteCode } from '../lib/warehouse'
 
 ensureSeed()
@@ -83,7 +84,7 @@ function uid() {
 
 function trackingNumber() {
   const n = Date.now().toString(36).toUpperCase().slice(-9)
-  return `JGL${n}`
+  return `${TRACKING_PREFIX}${n}`
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
@@ -205,7 +206,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
             userId: user.id,
             type: 'status_change',
             title: 'Shipment created',
-            body: `Tracking ${shipment.trackingNumber} is live — US to Jamaica.`,
+            body: `Tracking ${shipment.trackingNumber} is live — Bloom Shipping (US → Jamaica).`,
             shipmentId: shipment.id,
             read: false,
             createdAt: new Date().toISOString(),
@@ -378,7 +379,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         userId: user.id,
         type: 'system',
         title: 'You are approved',
-        body: 'Welcome to Jasmine Shipping — your account is active.',
+        body: 'Welcome to Bloom Shipping — your account is active.',
         read: false,
         createdAt: new Date().toISOString(),
       })

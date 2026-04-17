@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { JasmineLogo } from '../components/JasmineLogo'
+import { BloomLogo } from '../components/BloomLogo'
 import { useAppState } from '../contexts/AppStateContext'
 import { formatDate, shipmentStatusLabel } from '../lib/format'
 
@@ -36,7 +36,7 @@ export function PublicTracking() {
             className="flex min-h-[44px] items-center"
             aria-label="Home"
           >
-            <JasmineLogo variant="compact" theme="light" className="h-9 w-auto" />
+            <BloomLogo variant="compact" theme="light" className="h-9 w-auto" />
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
@@ -75,7 +75,7 @@ export function PublicTracking() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="e.g. JGL…"
+            placeholder="e.g. BLM…"
             className="min-h-[48px] flex-1 rounded-2xl border border-violet-200 bg-white px-4 py-3 font-mono text-base shadow-sm outline-none ring-rose-400/20 transition focus:border-rose-300 focus:ring-2 sm:text-lg"
           />
           <button

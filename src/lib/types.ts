@@ -31,6 +31,19 @@ export interface TrackingEvent {
   status: ShipmentStatus
 }
 
+/** Categories for listing what goes inside a box or barrel. */
+export type ContentCategory =
+  | 'grocery'
+  | 'household'
+  | 'construction'
+  | 'clothing'
+  | 'decor'
+  | 'vacation'
+  | 'event'
+  | 'other'
+
+export type OverseasPackaging = 'box' | 'barrel'
+
 export interface Shipment {
   id: string
   trackingNumber: string
@@ -46,6 +59,12 @@ export interface Shipment {
   estimatedDelivery: string
   createdAt: string
   events: TrackingEvent[]
+  /** Consolidated ocean-style load: what to put in a box or barrel. */
+  overseasPackaging?: OverseasPackaging
+  /** Personal / family care shipment — can be combined with box or barrel. */
+  carePackage?: boolean
+  /** Free-text list of desired items per category. */
+  contentNotesByCategory?: Partial<Record<ContentCategory, string>>
 }
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'void'

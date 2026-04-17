@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { JasmineLogo } from './JasmineLogo'
+import { BloomLogo } from './BloomLogo'
+import { COMPANY_LEGAL_NAME } from '../lib/brand'
 import { useAppState } from '../contexts/AppStateContext'
 
 const nav = [
@@ -40,7 +41,7 @@ export function Layout() {
             className="flex min-h-[44px] min-w-[44px] items-center justify-start sm:min-w-0"
             aria-label="Home"
           >
-            <JasmineLogo variant="compact" theme="light" className="h-9 w-auto sm:h-10" />
+            <BloomLogo variant="compact" theme="light" className="h-9 w-auto sm:h-10" />
           </button>
 
           <nav className="scrollbar-hide hidden max-w-[min(100vw-12rem,52rem)] items-center gap-1 overflow-x-auto md:flex">
@@ -106,14 +107,18 @@ export function Layout() {
 
       <footer className="border-t border-violet-100 bg-gradient-to-b from-white to-violet-50/50 py-10 text-center text-sm text-slate-600">
         <div className="flex justify-center px-4">
-          <JasmineLogo variant="full" theme="dark" className="h-10 w-auto sm:h-11" />
+          <BloomLogo variant="full" theme="dark" className="h-10 w-auto sm:h-11" />
         </div>
         <p className="mx-auto mt-4 max-w-md px-4 text-slate-600">
           US → Jamaica — clear, simple, and without the fuss.
         </p>
-        <p className="mt-4 text-xs text-slate-400">Preview: your data stays in this browser for now.</p>
+        {!import.meta.env.PROD ? (
+          <p className="mt-4 text-xs text-slate-400">
+            Development: your data stays in this browser until you connect a backend.
+          </p>
+        ) : null}
         <p className="mt-2 text-xs text-slate-400">
-          © {new Date().getFullYear()} Jasmine Shipping. All rights reserved.
+          © {new Date().getFullYear()} {COMPANY_LEGAL_NAME}. All rights reserved.
         </p>
       </footer>
     </div>

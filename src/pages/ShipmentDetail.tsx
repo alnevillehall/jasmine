@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 import { useAppState } from '../contexts/AppStateContext'
+import { contentCategoryLabel } from '../lib/contentCategories'
 import { formatDate, formatDateShort, shipmentStatusLabel } from '../lib/format'
+import type { ContentCategory } from '../lib/types'
 
 export function ShipmentDetail() {
   const { id } = useParams()
@@ -23,6 +25,12 @@ export function ShipmentDetail() {
   const events = [...shipment.events].sort(
     (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime(),
   )
+
+  const categoryEntries = shipment.contentNotesByCategory
+    ? (Object.entries(shipment.contentNotesByCategory) as [ContentCategory, string][]).filter(
+        ([, text]) => text.trim().length > 0,
+      )
+    : []
 
   return (
     <div className="space-y-8">
@@ -47,19 +55,55 @@ export function ShipmentDetail() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
-          <h2 className="font-semibold text-slate-900">What’s happened so far</h2>
-          <ol className="mt-6 space-y-6 border-l-2 border-slate-200 pl-6">
-            {events.map((ev) => (
-              <li key={ev.id} className="relative">
-                <span className="absolute -left-[1.4rem] top-1.5 h-3 w-3 rounded-full border-2 border-white bg-amber-500 shadow" />
-                <p className="text-sm font-medium text-slate-900">{ev.description}</p>
-                <p className="text-xs text-slate-500">{ev.location}</p>
-                <p className="mt-1 text-xs text-slate-400">{formatDate(ev.at)}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <div className="space-y-6 lg:col-span-2">
+          {(shipment.overseasPackaging ||
+            shipment.carePackage ||
+            categoryEntries.length > 0) && (
+            <section className="rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50/50 to-white p-5 shadow-sm">
+              <h2 className="font-semibold text-slate-900">Load &amp; care details</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {shipment.carePackage ? (
+                  <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-900">
+                    Care package
+                  </span>
+                ) : null}
+                {shipment.overseasPackaging ? (
+                  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+                    {shipment.overseasPackaging === 'box' ? 'Box consolidation' : 'Barrel consolidation'}
+                  </span>
+                ) : null}
+              </div>
+              {categoryEntries.length > 0 ? (
+                <ul className="mt-4 space-y-3 text-sm text-slate-700">
+                  {categoryEntries.map(([cat, text]) => (
+                    <li key={cat}>
+                      <span className="font-medium text-slate-900">{contentCategoryLabel(cat)}</span>
+                      <p className="mt-0.5 whitespace-pre-wrap text-slate-600">{text}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : shipment.overseasPackaging || shipment.carePackage ? (
+                <p className="mt-3 text-sm text-slate-500">
+                  No category list was added — contact support if you need to update this shipment.
+                </p>
+              ) : null}
+            </section>
+          )}
+
+          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="font-semibold text-slate-900">What’s happened so far</h2>
+            <ol className="mt-6 space-y-6 border-l-2 border-slate-200 pl-6">
+              {events.map((ev) => (
+                <li key={ev.id} className="relative">
+                  <span className="absolute -left-[1.4rem] top-1.5 h-3 w-3 rounded-full border-2 border-white bg-amber-500 shadow" />
+                  <p className="text-sm font-medium text-slate-900">{ev.description}</p>
+                  <p className="text-xs text-slate-500">{ev.location}</p>
+                  <p className="mt-1 text-xs text-slate-400">{formatDate(ev.at)}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
 
         <aside className="space-y-4">
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

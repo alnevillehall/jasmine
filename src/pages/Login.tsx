@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { JasmineLogo } from '../components/JasmineLogo'
+import { BloomLogo } from '../components/BloomLogo'
 import { useAppState } from '../contexts/AppStateContext'
 import { demoCredentials } from '../lib/seed'
 
@@ -36,7 +36,7 @@ export function Login() {
     <div className="flex min-h-screen min-h-[100dvh] items-center justify-center bg-gradient-to-br from-violet-100/80 via-rose-50 to-teal-50 px-4 py-10">
       <div className="w-full max-w-md rounded-3xl border border-white/60 bg-white/90 p-6 shadow-2xl shadow-violet-200/50 backdrop-blur-md sm:p-8">
         <div className="mb-6 flex justify-center">
-          <JasmineLogo variant="full" theme="dark" className="h-12 w-auto sm:h-14" />
+          <BloomLogo variant="full" theme="dark" className="h-12 w-auto sm:h-14" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Hi again</h1>
         <p className="mt-1 text-sm text-slate-600">Sign in to see your shipments and bills.</p>

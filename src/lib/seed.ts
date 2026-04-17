@@ -1,7 +1,7 @@
 import type { AppState, Shipment, TrackingEvent } from './types'
 import { loadState, saveState } from './storage'
 
-const DEMO_EMAIL = 'demo@jasmine.global'
+const DEMO_EMAIL = 'demo@bloomshipping.demo'
 const DEMO_PASSWORD = 'demo123'
 
 function uid() {
@@ -126,7 +126,7 @@ export function ensureSeed(): void {
     },
     createdAt: isoDaysAgo(30),
     accountStatus: 'approved' as const,
-    suiteCode: 'JGL-DEMO1',
+    suiteCode: 'BLM-DEMO1',
     idVerification: {
       submittedAt: isoDaysAgo(31),
       idType: 'passport' as const,
@@ -137,7 +137,7 @@ export function ensureSeed(): void {
 
   const s1: Shipment = {
     id: uid(),
-    trackingNumber: 'JGL' + Date.now().toString().slice(-10),
+    trackingNumber: 'BLM' + Date.now().toString().slice(-10),
     userId,
     service: 'express',
     status: 'in_transit',
@@ -169,11 +169,18 @@ export function ensureSeed(): void {
     estimatedDelivery: isoDaysFromNow(2),
     createdAt: isoDaysAgo(3),
     events: makeEvents('in_transit'),
+    overseasPackaging: 'barrel',
+    carePackage: true,
+    contentNotesByCategory: {
+      grocery: 'Rice, flour, canned goods',
+      household: 'Laundry detergent, cleaning supplies',
+      clothing: 'Mixed sizes for family — list on file',
+    },
   }
 
   const s2: Shipment = {
     id: uid(),
-    trackingNumber: 'JGL' + (Date.now() - 1000).toString().slice(-10),
+    trackingNumber: 'BLM' + (Date.now() - 1000).toString().slice(-10),
     userId,
     service: 'standard',
     status: 'delivered',
@@ -205,6 +212,11 @@ export function ensureSeed(): void {
     estimatedDelivery: isoDaysAgo(1),
     createdAt: isoDaysAgo(8),
     events: makeEvents('delivered'),
+    overseasPackaging: 'box',
+    carePackage: false,
+    contentNotesByCategory: {
+      decor: 'Frames, small mirrors',
+    },
   }
 
   const inv1Id = uid()

@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom'
-import { JasmineLogo } from '../components/JasmineLogo'
+import { BloomLogo } from '../components/BloomLogo'
 import { useAppState } from '../contexts/AppStateContext'
 import { WarehouseAddressCard } from '../components/WarehouseAddressCard'
 
@@ -32,7 +32,7 @@ export function Tutorial() {
     <div className="space-y-8">
       <div>
         <div className="flex flex-wrap items-center gap-4">
-          <JasmineLogo variant="full" theme="dark" className="h-10 w-auto" />
+          <BloomLogo variant="full" theme="dark" className="h-10 w-auto" />
           <h1 className="text-2xl font-semibold text-slate-900">How it works</h1>
         </div>
         <p className="mt-3 text-slate-600">

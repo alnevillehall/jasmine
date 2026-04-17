@@ -1,10 +1,30 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppState } from '../contexts/AppStateContext'
-import type { Address, Contact, Shipment } from '../lib/types'
+import { CONTENT_CATEGORY_OPTIONS } from '../lib/contentCategories'
+import type {
+  Address,
+  Contact,
+  ContentCategory,
+  OverseasPackaging,
+  Shipment,
+} from '../lib/types'
 
 function emptyAddress(): Address {
   return { line1: '', city: '', postalCode: '', country: '' }
+}
+
+function emptyCategoryNotes(): Record<ContentCategory, string> {
+  return {
+    grocery: '',
+    household: '',
+    construction: '',
+    clothing: '',
+    decor: '',
+    vacation: '',
+    event: '',
+    other: '',
+  }
 }
 
 export function NewShipment() {
@@ -14,6 +34,10 @@ export function NewShipment() {
   const [service, setService] = useState<Shipment['service']>('express')
   const [weightKg, setWeightKg] = useState('10')
   const [reference, setReference] = useState('')
+
+  const [overseasChoice, setOverseasChoice] = useState<'none' | OverseasPackaging>('none')
+  const [carePackage, setCarePackage] = useState(false)
+  const [categoryNotes, setCategoryNotes] = useState(emptyCategoryNotes())
 
   const [origin, setOrigin] = useState<Address>(emptyAddress())
   const [destination, setDestination] = useState<Address>(emptyAddress())
@@ -26,6 +50,10 @@ export function NewShipment() {
   }
   function patchDest(p: Partial<Address>) {
     setDestination((d) => ({ ...d, ...p }))
+  }
+
+  function patchCategoryNote(id: ContentCategory, value: string) {
+    setCategoryNotes((prev) => ({ ...prev, [id]: value }))
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -43,6 +71,12 @@ export function NewShipment() {
       email: user.email,
     }
 
+    const contentNotesByCategory = Object.fromEntries(
+      (Object.entries(categoryNotes) as [ContentCategory, string][]).filter(
+        ([, text]) => text.trim().length > 0,
+      ),
+    ) as Partial<Record<ContentCategory, string>>
+
     const shipment = createShipment({
       service,
       status: 'label_created',
@@ -57,6 +91,10 @@ export function NewShipment() {
       weightKg: w,
       reference: reference.trim() || undefined,
       estimatedDelivery: est.toISOString(),
+      overseasPackaging: overseasChoice === 'none' ? undefined : overseasChoice,
+      carePackage: carePackage || undefined,
+      contentNotesByCategory:
+        Object.keys(contentNotesByCategory).length > 0 ? contentNotesByCategory : undefined,
     })
 
     navigate(`/shipments/${shipment.id}`)
@@ -69,7 +107,10 @@ export function NewShipment() {
           ← Back to shipments
         </Link>
         <h1 className="mt-4 text-2xl font-semibold text-slate-900">Create shipment</h1>
-        <p className="mt-1 text-slate-600">Tell us where it’s going — we’ll give you a tracking number right away.</p>
+        <p className="mt-1 text-slate-600">
+          Tell us where it’s going — add a box or barrel list and care-package details if this load is
+          for family overseas.
+        </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -130,6 +171,85 @@ export function NewShipment() {
               className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
               placeholder="PO number, order ID…"
             />
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50/80 to-amber-50/40 p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Box, barrel &amp; care packages
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Building a consolidated <strong>box</strong> or <strong>barrel</strong> for overseas? List
+            what you want below. Tick <strong>care package</strong> when you’re sending essentials or
+            gifts for family.
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm">
+              <input
+                type="checkbox"
+                checked={carePackage}
+                onChange={(e) => setCarePackage(e.target.checked)}
+                className="rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+              />
+              <span className="font-medium text-slate-800">Care package</span>
+            </label>
+          </div>
+
+          <fieldset className="mt-4">
+            <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Overseas packaging
+            </legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              {(
+                [
+                  ['none', 'Regular parcel', 'No dedicated box/barrel list'],
+                  ['box', 'Box', 'Consolidated carton'],
+                  ['barrel', 'Barrel', 'Steel / plastic drum load'],
+                ] as const
+              ).map(([value, title, sub]) => (
+                <label
+                  key={value}
+                  className={`cursor-pointer rounded-lg border px-3 py-3 text-sm ${
+                    overseasChoice === value
+                      ? 'border-amber-500 bg-white ring-1 ring-amber-200'
+                      : 'border-slate-200 bg-white/70 hover:border-slate-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="overseas"
+                    className="sr-only"
+                    checked={overseasChoice === value}
+                    onChange={() => setOverseasChoice(value)}
+                  />
+                  <span className="font-medium text-slate-900">{title}</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">{sub}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="mt-5 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              List items by category
+            </p>
+            {CONTENT_CATEGORY_OPTIONS.map((cat) => (
+              <div key={cat.id}>
+                <label className="block text-sm font-medium text-slate-700" htmlFor={`cat-${cat.id}`}>
+                  {cat.label}
+                </label>
+                <p className="text-xs text-slate-400">{cat.hint}</p>
+                <textarea
+                  id={`cat-${cat.id}`}
+                  rows={2}
+                  value={categoryNotes[cat.id]}
+                  onChange={(e) => patchCategoryNote(cat.id, e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  placeholder="Items, brands, quantities…"
+                />
+              </div>
+            ))}
           </div>
         </section>
 
