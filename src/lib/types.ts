@@ -119,6 +119,29 @@ export interface NotificationPrefs {
   pushEnabled: boolean
 }
 
+export type AccountStatus = 'pending_id' | 'pending_review' | 'approved' | 'rejected'
+
+export type IdDocumentType = 'drivers_license' | 'passport' | 'national_id'
+
+export interface IdVerificationSubmission {
+  submittedAt: string
+  idType: IdDocumentType
+  fileName: string
+  notes?: string
+}
+
+/** Customer tells us about a purchase headed to the FL warehouse (invoice helps processing). */
+export interface IncomingPackageNotice {
+  id: string
+  userId: string
+  storeName: string
+  orderNumber?: string
+  carrierTracking?: string
+  itemsDescription: string
+  invoiceFileName?: string
+  createdAt: string
+}
+
 export interface UserProfile {
   id: string
   email: string
@@ -130,6 +153,14 @@ export interface UserProfile {
   savedAddresses: Address[]
   notificationPrefs: NotificationPrefs
   createdAt: string
+  /** New signups start at pending_id until ID is submitted, then pending_review until approved. */
+  accountStatus: AccountStatus
+  /** Unique code used on the warehouse address line so we can match packages to you. */
+  suiteCode: string
+  idVerification?: IdVerificationSubmission
+  rejectionReason?: string
+  /** When null, first-time tutorial has not been completed. */
+  tutorialCompletedAt: string | null
 }
 
 export interface AppState {
@@ -139,4 +170,5 @@ export interface AppState {
   payments: Payment[]
   paymentMethods: SavedPaymentMethod[]
   alerts: PackageAlert[]
+  incomingPackages: IncomingPackageNotice[]
 }

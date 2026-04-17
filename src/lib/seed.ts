@@ -20,39 +20,46 @@ function isoDaysFromNow(n: number) {
   return d.toISOString()
 }
 
-function makeEvents(
-  tracking: string,
-  status: Shipment['status'],
-): TrackingEvent[] {
-  const base = [
+/** Milestones typical of our US → Jamaica corridor (demo data). */
+function makeEvents(status: Shipment['status']): TrackingEvent[] {
+  const base: TrackingEvent[] = [
     {
       id: uid(),
       at: isoDaysAgo(3),
-      location: 'Singapore, SG',
-      description: 'Shipment information received',
-      status: 'label_created' as const,
+      location: 'Miami, FL, United States',
+      description: 'Booking confirmed — label created',
+      status: 'label_created',
     },
     {
       id: uid(),
       at: isoDaysAgo(2),
-      location: 'Singapore, SG',
-      description: 'Picked up by courier',
-      status: 'picked_up' as const,
+      location: 'Miami, FL, United States',
+      description: 'Pickup completed at US origin facility',
+      status: 'picked_up',
     },
     {
       id: uid(),
       at: isoDaysAgo(1),
-      location: 'Hong Kong, HK',
-      description: 'Arrived at hub',
-      status: 'in_transit' as const,
+      location: 'Miami export hub',
+      description: 'Departed US gateway — en route to Jamaica',
+      status: 'in_transit',
     },
   ]
+  if (status === 'in_transit') {
+    base.push({
+      id: uid(),
+      at: isoDaysAgo(0),
+      location: 'Caribbean transit',
+      description: 'In transit to Jamaica — on schedule for estimated delivery',
+      status: 'in_transit',
+    })
+  }
   if (status === 'customs') {
     base.push({
       id: uid(),
       at: isoDaysAgo(0),
-      location: 'Los Angeles, US',
-      description: 'Customs clearance in progress',
+      location: 'Kingston, Jamaica',
+      description: 'Jamaica customs review in progress',
       status: 'customs',
     })
   }
@@ -61,15 +68,8 @@ function makeEvents(
       {
         id: uid(),
         at: isoDaysAgo(0),
-        location: 'Chicago, US',
-        description: 'Cleared customs — in transit',
-        status: 'in_transit' as const,
-      },
-      {
-        id: uid(),
-        at: isoDaysAgo(0),
-        location: 'Chicago, US',
-        description: 'Out for delivery',
+        location: 'Kingston, Jamaica',
+        description: 'Cleared customs — out for delivery',
         status: 'out_for_delivery',
       },
     )
@@ -78,8 +78,15 @@ function makeEvents(
     base.push(
       {
         id: uid(),
+        at: isoDaysAgo(2),
+        location: 'Kingston, Jamaica',
+        description: 'Arrived in Jamaica — customs cleared',
+        status: 'in_transit',
+      },
+      {
+        id: uid(),
         at: isoDaysAgo(1),
-        location: 'London, GB',
+        location: 'Montego Bay, Jamaica',
         description: 'Delivered — signed for by recipient',
         status: 'delivered',
       },
@@ -100,15 +107,15 @@ export function ensureSeed(): void {
     email: DEMO_EMAIL,
     password: DEMO_PASSWORD,
     fullName: 'Alex Morgan',
-    company: 'Northwind Trading Ltd.',
+    company: 'Caribbean Horizon Trading LLC',
     phone: '+1 555 010 2233',
     role: 'customer' as const,
     savedAddresses: [
       {
-        line1: '221B Baker Street',
-        city: 'London',
-        postalCode: 'NW1 6XE',
-        country: 'United Kingdom',
+        line1: '14 Main Street',
+        city: 'Kingston',
+        postalCode: 'JMKN05',
+        country: 'Jamaica',
       },
     ],
     notificationPrefs: {
@@ -118,6 +125,14 @@ export function ensureSeed(): void {
       pushEnabled: true,
     },
     createdAt: isoDaysAgo(30),
+    accountStatus: 'approved' as const,
+    suiteCode: 'JGL-DEMO1',
+    idVerification: {
+      submittedAt: isoDaysAgo(31),
+      idType: 'passport' as const,
+      fileName: 'id-on-file.pdf',
+    },
+    tutorialCompletedAt: isoDaysAgo(29),
   }
 
   const s1: Shipment = {
@@ -127,33 +142,33 @@ export function ensureSeed(): void {
     service: 'express',
     status: 'in_transit',
     origin: {
-      line1: '12 Marina View',
-      city: 'Singapore',
-      postalCode: '018961',
-      country: 'Singapore',
+      line1: '1845 NW 79th Ave',
+      city: 'Miami',
+      state: 'FL',
+      postalCode: '33126',
+      country: 'United States',
     },
     destination: {
-      line1: '350 West Hubbard',
-      city: 'Chicago',
-      state: 'IL',
-      postalCode: '60654',
-      country: 'United States',
+      line1: '8-10 Ocean Boulevard',
+      city: 'Kingston',
+      postalCode: 'JMKN05',
+      country: 'Jamaica',
     },
     shipper: {
       name: 'Alex Morgan',
-      company: 'Northwind Trading Ltd.',
+      company: 'Caribbean Horizon Trading LLC',
       email: DEMO_EMAIL,
     },
     recipient: {
       name: 'Jordan Lee',
-      company: 'Great Lakes Retail',
-      phone: '+1 312 555 0199',
+      company: 'Island Fresh Market Ltd.',
+      phone: '+1 876 555 0188',
     },
     weightKg: 12.4,
     reference: 'PO-88421',
     estimatedDelivery: isoDaysFromNow(2),
     createdAt: isoDaysAgo(3),
-    events: makeEvents('s1', 'in_transit'),
+    events: makeEvents('in_transit'),
   }
 
   const s2: Shipment = {
@@ -163,30 +178,33 @@ export function ensureSeed(): void {
     service: 'standard',
     status: 'delivered',
     origin: {
-      line1: 'Unit 5, Industrial Park',
-      city: 'Rotterdam',
-      postalCode: '3044 BC',
-      country: 'Netherlands',
+      line1: '2500 NW 79th Ave',
+      city: 'Miami',
+      state: 'FL',
+      postalCode: '33122',
+      country: 'United States',
     },
     destination: {
-      line1: '10 Downing Street',
-      city: 'London',
-      postalCode: 'SW1A 2AA',
-      country: 'United Kingdom',
+      line1: 'Shop 3, Fairview Plaza',
+      city: 'Montego Bay',
+      postalCode: 'JMCR01',
+      country: 'Jamaica',
     },
     shipper: {
       name: 'Alex Morgan',
+      company: 'Caribbean Horizon Trading LLC',
       email: DEMO_EMAIL,
     },
     recipient: {
       name: 'Harriet Wilson',
-      phone: '+44 20 7946 0958',
+      company: 'MoBay Home & Gift',
+      phone: '+1 876 555 0162',
     },
     weightKg: 4.2,
     reference: 'RMA-202',
     estimatedDelivery: isoDaysAgo(1),
     createdAt: isoDaysAgo(8),
-    events: makeEvents('s2', 'delivered'),
+    events: makeEvents('delivered'),
   }
 
   const inv1Id = uid()
@@ -211,8 +229,8 @@ export function ensureSeed(): void {
         issuedAt: isoDaysAgo(2),
         dueAt: isoDaysFromNow(12),
         lineItems: [
-          { description: 'Express international — 12.4 kg', quantity: 1, unitPrice: 380 },
-          { description: 'Fuel surcharge', quantity: 1, unitPrice: 40 },
+          { description: 'Express US–Jamaica corridor — 12.4 kg', quantity: 1, unitPrice: 380 },
+          { description: 'Fuel & handling (corridor)', quantity: 1, unitPrice: 40 },
         ],
       },
       {
@@ -228,7 +246,7 @@ export function ensureSeed(): void {
         issuedAt: isoDaysAgo(10),
         dueAt: isoDaysAgo(3),
         lineItems: [
-          { description: 'Standard international — 4.2 kg', quantity: 1, unitPrice: 186.5 },
+          { description: 'Standard US–Jamaica — 4.2 kg', quantity: 1, unitPrice: 186.5 },
         ],
       },
     ],
@@ -262,7 +280,7 @@ export function ensureSeed(): void {
         userId,
         type: 'status_change',
         title: 'Shipment in transit',
-        body: `Package ${s1.trackingNumber} departed Hong Kong hub.`,
+        body: `Package ${s1.trackingNumber} departed our Miami gateway — on the way to Jamaica.`,
         shipmentId: s1.id,
         read: false,
         createdAt: isoDaysAgo(1),

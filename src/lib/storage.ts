@@ -1,5 +1,6 @@
 import type {
   AppState,
+  IncomingPackageNotice,
   Invoice,
   PackageAlert,
   Payment,
@@ -7,6 +8,7 @@ import type {
   Shipment,
   UserProfile,
 } from './types'
+import { migrateUser } from './migrate'
 
 const KEYS = {
   state: 'jasmine-global-logistics-state',
@@ -21,6 +23,7 @@ function defaultState(): AppState {
     payments: [],
     paymentMethods: [],
     alerts: [],
+    incomingPackages: [],
   }
 }
 
@@ -29,15 +32,17 @@ export function loadState(): AppState {
     const raw = localStorage.getItem(KEYS.state)
     if (!raw) return defaultState()
     const parsed = JSON.parse(raw) as AppState
+    const users = (parsed.users ?? []).map((u) => migrateUser(u as UserProfile))
     return {
       ...defaultState(),
       ...parsed,
-      users: parsed.users ?? [],
+      users,
       shipments: parsed.shipments ?? [],
       invoices: parsed.invoices ?? [],
       payments: parsed.payments ?? [],
       paymentMethods: parsed.paymentMethods ?? [],
       alerts: parsed.alerts ?? [],
+      incomingPackages: parsed.incomingPackages ?? [],
     }
   } catch {
     return defaultState()
@@ -115,6 +120,13 @@ export function upsertPaymentMethod(
 
 export function pushAlert(state: AppState, alert: PackageAlert): AppState {
   return { ...state, alerts: [alert, ...state.alerts] }
+}
+
+export function pushIncomingPackage(
+  state: AppState,
+  row: IncomingPackageNotice,
+): AppState {
+  return { ...state, incomingPackages: [row, ...state.incomingPackages] }
 }
 
 export function patchState(
